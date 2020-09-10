@@ -1,0 +1,4 @@
+ALTER TABLE blogs
+  DROP COLUMN IF EXISTS user_id;
+
+DROP TABLE IF EXISTS blog_users CASCADE;
