@@ -3,21 +3,26 @@ const Treeize = require('treeize');
 
 const BlogsService = {
   getAllBlogs(db) {
-    return db
-      .from('blogs AS blg')
-      .select(
-        'blg.id',
-        'blg.title',
-        'blg.date_created',
-        'blg.content',
-        'blg.image',
-        ...userFields,
-        db.raw(`count(DISTINCT rev) AS number_of_reviews`),
-        db.raw(`AVG(rev.rating) AS average_review_rating`)
-      )
-      .leftJoin('blogs_reviews AS rev', 'blg.id', 'rev.blog_id')
-      .leftJoin('blog_users AS usr', 'blg.user_id', 'usr.id')
-      .groupBy('blg.id', 'usr.id');
+    return db.from('blogs AS blg').select(
+      '*'
+      // 'blg.id',
+      // 'blg.title',
+      // 'blg.date_created',
+      // 'blg.content',
+      // 'blg.image',
+      // ...userFields,
+      // db.raw(`count(DISTINCT rev) AS number_of_reviews`),
+      // db.raw(`AVG(rev.rating) AS average_review_rating`)
+    );
+    // .leftJoin('blogs_comments AS rev', 'blg.id', 'rev.blog_id')
+    // .leftJoin('blog_users AS usr', 'blg.user_id', 'usr.id')
+    // .groupBy('blg.id', 'usr.id');
+  },
+
+  createBlog(db, image, title, content, user) {
+    return db('blogs')
+      .insert({ image, title, content, user_id: user })
+      .returning('*');
   },
 
   getById(db, id) {
@@ -26,7 +31,7 @@ const BlogsService = {
 
   getReviewsForBlogs(db, blog_id) {
     return db
-      .from('blog_reviews AS rev')
+      .from('blog_comments AS rev')
       .select(
         'rev.id',
         'rev.rating',
